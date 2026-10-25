@@ -1,0 +1,549 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Carta Piegata</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: un tappetino da taglio con griglia; i diagrammi stanno su un foglio bianco appoggiato sopra */
+:root{
+  --mat:#e3eae2; --grid:#cfd9ce; --panel:#f6f8f4; --ink:#1d2822; --muted:#5b6b62;
+  --accent:#c4572a; --sheet:#fffdf8; --line:#1d2822; --paper:#fffdf8; --shadow:rgba(29,40,34,.12);
+  --display:"Shippori Mincho B1", "Hiragino Mincho ProN", Georgia, serif;
+  --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --mat:#141c18; --grid:#1f2a24; --panel:#1b2520; --ink:#e6eee8; --muted:#9aaba1;
+  --accent:#e8784a; --shadow:rgba(0,0,0,.4); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --mat:#141c18; --grid:#1f2a24; --panel:#1b2520; --ink:#e6eee8; --muted:#9aaba1;
+  --accent:#e8784a; --shadow:rgba(0,0,0,.4); color-scheme:dark }
+
+body{background:var(--mat);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:32px 32px;}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px;display:grid;gap:28px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(2rem,6vw,3.2rem);line-height:1;margin:0;letter-spacing:-.01em;text-wrap:balance}
+h1 span{color:var(--accent)}
+.tag{font-family:var(--mono);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.intro{margin:6px 0 0;color:var(--muted);max-width:52ch}
+
+.models{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px}
+.card{all:unset;box-sizing:border-box;cursor:pointer;background:var(--panel);border:1.5px solid var(--grid);border-radius:6px;padding:12px;display:grid;grid-template-columns:72px 1fr;gap:12px;align-items:center;transition:border-color .15s,transform .15s}
+.card:hover{transform:translateY(-2px)}
+.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.card[aria-pressed="true"]{border-color:var(--accent)}
+.card .thumb{background:var(--sheet);border-radius:4px;aspect-ratio:1;max-width:100%}
+.card h3{margin:0;font-family:var(--display);font-size:1.15rem;font-weight:800}
+.meta{display:flex;flex-wrap:wrap;gap:6px 10px;font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-top:4px}
+.dots{letter-spacing:2px;color:var(--accent)}
+
+.catalog{display:grid;gap:14px}
+.filters{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:600 .9rem var(--body);cursor:pointer;padding:8px 14px;border-radius:999px;border:1.5px solid var(--grid);background:var(--panel);color:var(--ink);display:inline-flex;gap:8px;align-items:center}
+.chip span{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--mat)}
+.chip[aria-pressed="true"] span{color:var(--mat);opacity:.7}
+.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cat{font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)}
+.viewer{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:760px){.viewer{grid-template-columns:1fr}}
+.sheet{background:var(--sheet);border-radius:3px;box-shadow:0 1px 0 var(--grid),6px 8px 0 var(--shadow);position:relative;touch-action:pan-y}
+.sheet svg{display:block;width:100%;height:auto;aspect-ratio:1}
+.stepno{position:absolute;top:12px;left:14px;font-family:var(--mono);font-size:.8rem;color:#5b6b62}
+.side{display:grid;gap:18px;min-width:0}
+.side h2{font-family:var(--display);font-weight:800;font-size:clamp(1.5rem,3.6vw,2rem);margin:0;line-height:1.15;text-wrap:balance}
+.side p{margin:0;max-width:60ch}
+.progress{display:flex;gap:6px;flex-wrap:wrap}
+.progress button{all:unset;cursor:pointer;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:.75rem;border:1.5px solid var(--grid);background:var(--panel);color:var(--muted)}
+.progress button.done{border-color:var(--accent);color:var(--accent)}
+.progress button.cur{background:var(--accent);border-color:var(--accent);color:#fff}
+.progress button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.nav{display:flex;gap:10px}
+.btn{font:600 1rem var(--body);cursor:pointer;padding:12px 18px;border-radius:6px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);flex:1}
+.btn.primary{background:var(--ink);color:var(--mat)}
+.btn:disabled{opacity:.35;cursor:default}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tip{border-left:3px solid var(--accent);padding:4px 0 4px 12px;color:var(--muted);font-size:.95rem}
+.legend{display:grid;gap:8px;font-size:.88rem;color:var(--muted);border-top:1.5px dashed var(--grid);padding-top:14px}
+.legend div{display:flex;align-items:center;gap:10px}
+.legend svg{flex:none;width:54px;height:16px}
+.done-msg{font-family:var(--display);font-weight:800;color:var(--accent)}
+
+/* simboli dei diagrammi */
+.front{fill:var(--kami);stroke:var(--line);stroke-width:1.6;stroke-linejoin:round}
+.front2{fill:var(--kami2);stroke:var(--line);stroke-width:1.6;stroke-linejoin:round}
+.back{fill:var(--paper);stroke:var(--line);stroke-width:1.6;stroke-linejoin:round}
+.valley{stroke:var(--line);stroke-width:1.6;stroke-dasharray:7 5;fill:none}
+.mountain{stroke:var(--line);stroke-width:1.6;stroke-dasharray:9 3 2 3;fill:none}
+.crease{stroke:var(--line);stroke-width:1;opacity:.35;fill:none}
+.arr{stroke:#c4572a;stroke-width:2.2;fill:none;marker-end:url(#ah)}
+.arr2{stroke:#c4572a;stroke-width:2.2;fill:none;marker-end:url(#ah);marker-start:url(#ahs)}
+.ink{fill:var(--line)}
+.cut{stroke:#c4572a;stroke-width:2.4;fill:none}
+.lbl{font:500 10px var(--mono);fill:#5b6b62}
+@media (prefers-reduced-motion:no-preference){.sheet svg.anim{animation:in .35s ease}}
+@keyframes in{from{opacity:.3;transform:rotate(-1.5deg) scale(.98)}to{opacity:1;transform:none}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c4572a"/></marker>
+    <marker id="ahs" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c4572a"/></marker>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header>
+    <div>
+      <div class="tag">Origami · diagrammi passo passo</div>
+      <h1>Carta <span>Piegata</span></h1>
+      <p class="intro">Diciannove modelli classici, dal più facile alla gru. Filtra per categoria, prendi un foglio quadrato o A4 e segui le illustrazioni. Le linee tratteggiate indicano dove piegare, le frecce in che direzione.</p>
+    </div>
+  </header>
+
+  <section class="catalog" aria-label="Modelli">
+    <div class="filters" id="filters" role="group" aria-label="Filtra per categoria"></div>
+    <div class="models" id="models"></div>
+  </section>
+
+  <section class="viewer" id="viewer" aria-live="polite">
+    <div class="sheet" id="sheet">
+      <span class="stepno" id="stepno"></span>
+      <div id="diagram"></div>
+    </div>
+    <div class="side">
+      <div>
+        <div class="tag" id="modelname"></div>
+        <h2 id="steptitle"></h2>
+      </div>
+      <p id="steptext"></p>
+      <p class="tip" id="steptip" hidden></p>
+      <div class="progress" id="progress" aria-label="Passaggi"></div>
+      <div class="nav">
+        <button class="btn" id="prev" type="button">← Indietro</button>
+        <button class="btn primary" id="next" type="button">Avanti →</button>
+      </div>
+      <div class="legend">
+        <div><svg viewBox="0 0 54 16"><line x1="2" y1="8" x2="52" y2="8" class="valley"/></svg>Piega a valle: la carta si piega verso di te</div>
+        <div><svg viewBox="0 0 54 16"><line x1="2" y1="8" x2="52" y2="8" class="mountain"/></svg>Piega a monte: la carta si piega all'indietro</div>
+        <div><svg viewBox="0 0 54 16"><line x1="2" y1="8" x2="52" y2="8" class="crease"/></svg>Segno di una piega già fatta</div>
+        <div><svg viewBox="0 0 54 16"><path d="M4,12 Q27,0 48,10" class="arr"/></svg>Direzione in cui muovere la carta</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const sq = '<polygon class="back" points="100,20 180,100 100,180 20,100"/>';
+
+const MODELS = [
+{
+  id:"aeroplano", cat:"giocattoli", name:"Aeroplano", level:1, time:"3 min", paper:"Foglio A4",
+  kami:"#5b8fd0", kami2:"#3f72b3",
+  steps:[
+    {t:"Segna il centro", d:"Metti il foglio in verticale. Piegalo a metà nel senso della lunghezza, ripassa bene la piega con l'unghia e riaprilo.",
+     svg:`<rect class="front" x="40" y="15" width="120" height="170"/><line class="valley" x1="100" y1="15" x2="100" y2="185"/><path class="arr2" d="M52,62 C70,34 130,34 148,62"/>`},
+    {t:"Piega gli angoli in alto", d:"Porta i due angoli superiori sulla piega centrale. I bordi devono toccarsi senza sovrapporsi.",
+     svg:`<rect class="front" x="40" y="15" width="120" height="170"/><line class="crease" x1="100" y1="15" x2="100" y2="185"/><line class="valley" x1="100" y1="15" x2="40" y2="75"/><line class="valley" x1="100" y1="15" x2="160" y2="75"/><path class="arr" d="M44,24 C52,52 70,66 88,66"/><path class="arr" d="M156,24 C148,52 130,66 112,66"/>`},
+    {t:"Piega di nuovo verso il centro", d:"Ora prendi i nuovi bordi inclinati e portali anche loro sulla linea centrale. La punta diventa più affilata.",
+     tip:"Parti dalla punta e scendi: così la piega resta dritta.",
+     svg:`<polygon class="front" points="100,15 160,75 160,185 40,185 40,75"/><polygon class="back" points="100,15 40,75 100,75"/><polygon class="back" points="100,15 160,75 100,75"/><line class="valley" x1="100" y1="15" x2="40" y2="160"/><line class="valley" x1="100" y1="15" x2="160" y2="160"/><path class="arr" d="M38,110 C55,140 80,140 92,128"/><path class="arr" d="M162,110 C145,140 120,140 108,128"/>`},
+    {t:"Chiudi a metà", d:"Gira il modello e piegalo a metà lungo la linea centrale, con le pieghe appena fatte all'esterno.",
+     svg:`<polygon class="front" points="100,15 160,160 160,185 40,185 40,160"/><polygon class="front2" points="100,15 100,100 40,160"/><polygon class="front2" points="100,15 100,100 160,160"/><line class="mountain" x1="100" y1="15" x2="100" y2="185"/><path class="arr" d="M150,178 C175,150 175,120 150,110"/><text class="lbl" x="118" y="198">piega dietro</text>`},
+    {t:"Abbassa le ali", d:"Tieni il modello di lato con la punta a sinistra. Piega il primo strato verso il basso parallelo al bordo inferiore, poi gira e ripeti con l'altra ala.",
+     tip:"Lascia una chiglia alta circa 2 cm: servirà da impugnatura.",
+     svg:`<polygon class="front" points="15,140 160,80 185,80 185,140"/><line class="valley" x1="38" y1="131" x2="185" y2="118"/><path class="arr" d="M150,86 C170,100 170,140 150,158"/>`},
+    {t:"Pronto al decollo", d:"Apri leggermente le ali in modo che siano orizzontali rispetto alla chiglia. Lancia con un movimento deciso ma non troppo forte.",
+     tip:"Se picchia verso il basso, piega un poco all'insù il bordo posteriore delle ali.",
+     svg:`<polygon class="front" points="100,22 30,168 96,158"/><polygon class="front" points="100,22 170,168 104,158"/><polygon class="front2" points="100,22 96,158 100,178 104,158"/>`}
+  ]
+},
+{
+  id:"cane", cat:"animali", name:"Muso di cane", level:1, time:"5 min", paper:"Quadrato 15 cm",
+  kami:"#e0ac4a", kami2:"#c48e2c",
+  steps:[
+    {t:"Piega a triangolo", d:"Metti il quadrato a rombo con il lato colorato in basso. Porta l'angolo in alto su quello in basso.",
+     svg:sq+`<line class="valley" x1="20" y1="100" x2="180" y2="100"/><path class="arr" d="M112,34 C160,70 160,130 112,166"/>`},
+    {t:"Segna il centro", d:"Piega il triangolo a metà da sinistra a destra, ripassa la piega e riaprilo. Questo segno ti aiuta a tenere il muso simmetrico.",
+     svg:`<polygon class="front" points="20,100 180,100 100,180"/><line class="valley" x1="100" y1="100" x2="100" y2="180"/><path class="arr2" d="M32,92 C60,52 140,52 168,92"/>`},
+    {t:"Piega le orecchie", d:"Piega gli angoli destro e sinistro verso il basso lungo le linee tratteggiate. Le punte devono finire un po' sotto il bordo superiore.",
+     tip:"Orecchie più lunghe fanno un cane da caccia, più corte un cucciolo.",
+     svg:`<polygon class="front" points="20,100 180,100 100,180"/><line class="crease" x1="100" y1="100" x2="100" y2="180"/><line class="valley" x1="75" y1="100" x2="45" y2="125"/><line class="valley" x1="125" y1="100" x2="155" y2="125"/><path class="arr" d="M20,92 C10,125 35,152 58,152"/><path class="arr" d="M180,92 C190,125 165,152 142,152"/>`},
+    {t:"Solleva il mento", d:"Piega in su la punta inferiore, solo il primo strato. Diventerà il naso e darà forma al mento.",
+     svg:`<polygon class="front" points="75,100 125,100 155,125 100,180 45,125"/><polygon class="back" points="75,100 45,125 65,154"/><polygon class="back" points="125,100 155,125 135,154"/><line class="valley" x1="80" y1="160" x2="120" y2="160"/><path class="arr" d="M108,176 C125,168 124,150 106,144"/>`},
+    {t:"Disegna il muso", d:"Gira la punta posteriore in alto dietro al modello per arrotondare la testa, poi disegna occhi e naso con un pennarello.",
+     tip:"Il naso va proprio sulla punta piegata.",
+     svg:`<polygon class="front" points="75,100 125,100 155,125 120,160 80,160 45,125"/><polygon class="back" points="80,160 120,160 100,140"/><polygon class="back" points="75,100 45,125 65,154"/><polygon class="back" points="125,100 155,125 135,154"/><circle class="ink" cx="88" cy="122" r="4"/><circle class="ink" cx="112" cy="122" r="4"/><ellipse class="ink" cx="100" cy="152" rx="7" ry="5"/>`}
+  ]
+},
+{
+  id:"bicchiere", cat:"decorazioni", name:"Bicchiere", level:2, time:"5 min", paper:"Quadrato 20 cm",
+  kami:"#5ea886", kami2:"#3f8a69",
+  steps:[
+    {t:"Piega a triangolo", d:"Metti il quadrato a rombo. Porta l'angolo inferiore su quello superiore: ottieni un triangolo con la punta in alto.",
+     svg:sq+`<line class="valley" x1="20" y1="100" x2="180" y2="100"/><path class="arr" d="M88,168 C40,140 40,62 88,32"/>`},
+    {t:"Angolo destro a sinistra", d:"Porta l'angolo destro sul bordo sinistro. Il bordo superiore della parte piegata deve risultare orizzontale.",
+     svg:`<g transform="translate(-60,10) scale(1.6)"><polygon class="front" points="20,100 180,100 100,20"/><line class="valley" x1="133.1" y1="53.1" x2="113.7" y2="100"/><path class="arr" d="M172,96 C150,40 100,38 72,52"/></g>`},
+    {t:"Angolo sinistro a destra", d:"Ripeti dall'altro lato: porta l'angolo sinistro fino al bordo destro, alla stessa altezza.",
+     svg:`<g transform="translate(-60,10) scale(1.6)"><polygon class="front" points="20,100 113.7,100 133.1,53.1 100,20"/><polygon class="back" points="133.1,53.1 113.7,100 66.9,53.1"/><line class="valley" x1="66.9" y1="53.1" x2="86.3" y2="100"/><path class="arr" d="M26,96 C45,72 100,68 128,57"/></g>`},
+    {t:"Abbassa le punte", d:"Piega in giù lo strato anteriore della punta in alto e infilalo nella tasca davanti. Gira il modello e fai lo stesso con l'altra punta.",
+     tip:"La tasca è lo spazio tra la piega fatta al passo 3 e il corpo.",
+     svg:`<g transform="translate(-60,10) scale(1.6)"><polygon class="front" points="86.3,100 113.7,100 133.1,53.1 66.9,53.1"/><polygon class="back" points="133.1,53.1 113.7,100 66.9,53.1"/><polygon class="back" points="66.9,53.1 86.3,100 133.1,53.1"/><polygon class="front" points="66.9,53.1 133.1,53.1 100,20"/><line class="valley" x1="66.9" y1="53.1" x2="133.1" y2="53.1"/><path class="arr" d="M108,28 C126,44 124,70 106,82"/></g>`},
+    {t:"Apri il bicchiere", d:"Premi leggermente i lati per aprire la bocca del bicchiere. Regge l'acqua per qualche minuto, abbastanza per un sorso.",
+     tip:"Con carta da forno o carta cerata dura molto di più.",
+     svg:`<g transform="translate(-60,10) scale(1.6)"><polygon class="front" points="86.3,100 113.7,100 133.1,53.1 66.9,53.1"/><polygon class="back" points="66.9,53.1 133.1,53.1 100,84"/><ellipse cx="100" cy="53.1" rx="33" ry="4" fill="none" stroke="var(--line)" stroke-width="1"/></g>`}
+  ]
+},
+{
+  id:"gru", cat:"animali", name:"Gru", level:3, time:"15 min", paper:"Quadrato 15 cm",
+  kami:"#d9584a", kami2:"#b23f33",
+  steps:[
+    {t:"Prepara le pieghe", d:"Con il lato colorato in alto piega le due diagonali e riaprile. Gira il foglio e piegalo a metà in orizzontale e in verticale, riaprendo ogni volta.",
+     tip:"Questa griglia di pieghe è la base di decine di modelli: ripassala bene.",
+     svg:`<rect class="front" x="30" y="30" width="140" height="140"/><line class="valley" x1="30" y1="30" x2="170" y2="170"/><line class="valley" x1="170" y1="30" x2="30" y2="170"/><line class="mountain" x1="100" y1="30" x2="100" y2="170"/><line class="mountain" x1="30" y1="100" x2="170" y2="100"/>`},
+    {t:"Chiudi la base preliminare", d:"Spingi i punti medi dei lati sinistro e destro verso l'interno e fai scendere l'angolo in alto: il foglio si chiude da solo in un piccolo rombo a quattro strati.",
+     svg:`<rect class="front" x="30" y="30" width="140" height="140"/><line class="crease" x1="30" y1="30" x2="170" y2="170"/><line class="crease" x1="170" y1="30" x2="30" y2="170"/><line class="crease" x1="100" y1="30" x2="100" y2="170"/><line class="crease" x1="30" y1="100" x2="170" y2="100"/><path class="arr" d="M34,100 C52,128 70,150 90,164"/><path class="arr" d="M166,100 C148,128 130,150 110,164"/><path class="arr" d="M100,36 C114,70 114,120 102,158"/>`},
+    {t:"Piega ad aquilone", d:"Con le punte aperte in basso, porta i bordi inferiori dello strato davanti sulla linea centrale. Poi piega in giù il triangolo in alto e riapri tutto e tre le pieghe.",
+     svg:`<polygon class="front" points="100,20 160,100 100,180 40,100"/><line class="crease" x1="100" y1="20" x2="100" y2="180"/><line class="valley" x1="100" y1="180" x2="63.1" y2="69.2"/><line class="valley" x1="100" y1="180" x2="136.9" y2="69.2"/><line class="valley" x1="63.1" y1="69.2" x2="136.9" y2="69.2"/><path class="arr" d="M42,106 C58,128 78,132 92,124"/><path class="arr" d="M158,106 C142,128 122,132 108,124"/><path class="arr" d="M100,26 C118,40 118,58 104,66"/>`},
+    {t:"Piega a petalo", d:"Solleva la punta inferiore dello strato davanti e portala in alto. I lati rientrano da soli lungo le pieghe appena fatte. Gira il modello e ripeti dietro.",
+     tip:"Se i lati non rientrano bene, ripassa le pieghe del passo 3.",
+     svg:`<polygon class="front" points="100,20 160,100 100,180 40,100"/><line class="crease" x1="100" y1="180" x2="63.1" y2="69.2"/><line class="crease" x1="100" y1="180" x2="136.9" y2="69.2"/><line class="valley" x1="63.1" y1="69.2" x2="136.9" y2="69.2"/><path class="arr" d="M104,174 C150,150 150,60 108,24"/><path class="arr" d="M44,100 C58,96 66,92 76,84"/><path class="arr" d="M156,100 C142,96 134,92 124,84"/>`},
+    {t:"Assottiglia le zampe", d:"Ora hai la base dell'uccello. Porta i bordi inferiori dello strato davanti sulla linea centrale, poi gira e ripeti. Le due punte in basso diventano sottili.",
+     svg:`<polygon class="front" points="100,12 135,70 100,188 65,70"/><line class="crease" x1="65" y1="70" x2="135" y2="70"/><line class="crease" x1="100" y1="70" x2="100" y2="188"/><line class="valley" x1="100" y1="188" x2="84" y2="70"/><line class="valley" x1="100" y1="188" x2="116" y2="70"/><path class="arr" d="M68,78 C76,100 86,108 94,108"/><path class="arr" d="M132,78 C124,100 114,108 106,108"/>`},
+    {t:"Alza collo e coda", d:"Con una piega rovescia interna porta ciascuna punta sottile verso l'alto, tra le ali. Apri leggermente gli strati, spingi la punta dentro e richiudi.",
+     tip:"Segna prima la piega in avanti e indietro: la piega rovescia viene molto più pulita.",
+     svg:`<polygon class="front" points="100,20 128,80 100,104 72,80"/><polygon class="front2" points="88,80 100,104 66,182 62,178"/><polygon class="front2" points="112,80 100,104 134,182 138,178"/><line class="valley" x1="74" y1="124" x2="90" y2="132"/><line class="valley" x1="126" y1="124" x2="110" y2="132"/><path class="arr" d="M60,174 C30,140 30,80 52,46"/><path class="arr" d="M140,174 C170,140 170,80 148,46"/>`},
+    {t:"Testa e ali", d:"Piega la testa con una piccola piega rovescia vicino alla punta del collo. Abbassa le ali e tirale con delicatezza per gonfiare il corpo.",
+     tip:"Secondo la tradizione giapponese, chi piega mille gru può esprimere un desiderio.",
+     svg:`<polygon class="front2" points="70,126 100,108 130,126 100,142"/><polygon class="front" points="72,125 80,121 42,58 37,61"/><polygon class="front" points="37,61 42,58 26,74"/><polygon class="front" points="128,125 120,121 166,54 171,57"/><polygon class="front2" points="104,118 152,34 112,114"/><polygon class="front" points="96,118 62,26 112,114"/>`}
+  ]
+},
+{
+  id:"rana", cat:"animali", name:"Rana saltellante", level:2, time:"8 min", paper:"Rettangolo 2:1",
+  kami:"#6fae4c", kami2:"#4f8f33",
+  steps:[
+    {t:"Pieghe sul quadrato in alto", d:"Usa un rettangolo lungo il doppio della larghezza, come un biglietto da visita. Nella parte alta piega le due diagonali a valle e la linea orizzontale a monte, riaprendo ogni volta.",
+     svg:`<rect class="front" x="60" y="20" width="80" height="160"/><line class="valley" x1="60" y1="20" x2="140" y2="100"/><line class="valley" x1="140" y1="20" x2="60" y2="100"/><line class="mountain" x1="60" y1="60" x2="140" y2="60"/>`},
+    {t:"Chiudi la testa", d:"Spingi i punti dove finisce la linea orizzontale verso l'interno: la parte alta si chiude in un triangolo appoggiato sul corpo.",
+     svg:`<rect class="front" x="60" y="20" width="80" height="160"/><line class="crease" x1="60" y1="20" x2="140" y2="100"/><line class="crease" x1="140" y1="20" x2="60" y2="100"/><line class="crease" x1="60" y1="60" x2="140" y2="60"/><path class="arr" d="M54,60 C70,62 82,62 94,60"/><path class="arr" d="M146,60 C130,62 118,62 106,60"/>`},
+    {t:"Zampe anteriori", d:"Piega i due angoli bassi del triangolo verso la punta in alto. Diventeranno le zampe davanti.",
+     svg:`<polygon class="front" points="60,60 140,60 140,180 60,180"/><polygon class="front" points="60,60 140,60 100,20"/><line class="crease" x1="100" y1="20" x2="100" y2="60"/><line class="valley" x1="80" y1="40" x2="100" y2="60"/><line class="valley" x1="120" y1="40" x2="100" y2="60"/><path class="arr" d="M62,56 C64,36 78,24 94,22"/><path class="arr" d="M138,56 C136,36 122,24 106,22"/>`},
+    {t:"Stringi il corpo", d:"Porta i lati lunghi del corpo sulla linea centrale. Il triangolo della testa resta sopra.",
+     svg:`<polygon class="front" points="60,60 140,60 140,180 60,180"/><polygon class="front" points="60,60 140,60 100,20"/><polygon class="back" points="80,40 100,60 100,20"/><polygon class="back" points="120,40 100,60 100,20"/><line class="valley" x1="80" y1="60" x2="80" y2="180"/><line class="valley" x1="120" y1="60" x2="120" y2="180"/><path class="arr" d="M62,140 C70,124 84,124 94,134"/><path class="arr" d="M138,140 C130,124 116,124 106,134"/>`},
+    {t:"La molla", d:"Piega il fondo in su fino alla base della testa. Poi ripiega metà di quel lembo verso il basso: questa piega a fisarmonica è la molla che fa saltare la rana.",
+     svg:`<polygon class="front" points="80,60 120,60 120,180 80,180"/><polygon class="front" points="60,60 140,60 100,20"/><line class="crease" x1="100" y1="60" x2="100" y2="180"/><line class="valley" x1="80" y1="120" x2="120" y2="120"/><line class="mountain" x1="80" y1="150" x2="120" y2="150"/><path class="arr" d="M126,176 C150,150 150,90 126,66"/>`},
+    {t:"Falla saltare", d:"Gira la rana. Premi con il dito sul bordo posteriore e lascialo scivolare via: la rana salta in avanti.",
+     tip:"Carta un po' rigida, come un cartoncino sottile, salta più lontano.",
+     svg:`<polygon class="front" points="62,82 138,82 100,40"/><polygon class="front2" points="70,82 48,52 82,76"/><polygon class="front2" points="130,82 152,52 118,76"/><rect class="front" x="80" y="82" width="40" height="64"/><line class="crease" x1="80" y1="122" x2="120" y2="122"/><rect class="front2" x="80" y="146" width="40" height="16"/><circle class="ink" cx="90" cy="64" r="3.5"/><circle class="ink" cx="110" cy="64" r="3.5"/>`}
+  ]
+},
+{
+  id:"barchetta", cat:"giocattoli", name:"Barchetta", level:2, time:"6 min", paper:"Foglio A4",
+  kami:"#4a7fb0", kami2:"#346291",
+  steps:[
+    {t:"Piega a metà", d:"Tieni il foglio in orizzontale e porta il bordo superiore su quello inferiore.",
+     svg:`<rect class="front" x="20" y="45" width="160" height="110"/><line class="valley" x1="20" y1="100" x2="180" y2="100"/><path class="arr" d="M112,50 C150,70 150,130 112,150"/>`},
+    {t:"Angoli verso il centro", d:"Con la piega chiusa in alto, porta i due angoli superiori verso il centro. Lascia una striscia libera in basso.",
+     svg:`<rect class="front" x="30" y="70" width="140" height="95"/><line class="valley" x1="100" y1="70" x2="30" y2="140"/><line class="valley" x1="100" y1="70" x2="170" y2="140"/><path class="arr" d="M34,74 C46,100 70,112 88,112"/><path class="arr" d="M166,74 C154,100 130,112 112,112"/>`},
+    {t:"Il cappello", d:"Piega in su la striscia davanti sopra i triangoli. Gira il modello e fai lo stesso con l'altra striscia: hai un cappello da pirata.",
+     svg:`<polygon class="front" points="100,70 30,140 170,140"/><rect class="front2" x="30" y="140" width="140" height="25"/><line class="valley" x1="30" y1="140" x2="170" y2="140"/><path class="arr" d="M100,162 C124,158 124,134 104,124"/>`},
+    {t:"Schiaccia a rombo", d:"Apri il cappello dal basso e avvicina le due punte laterali finché si toccano. Schiaccialo: ottieni un rombo. Piega la punta in basso verso l'alto, davanti e dietro.",
+     svg:`<polygon class="front" points="100,60 30,130 170,130"/><rect class="front2" x="30" y="130" width="140" height="18"/><path class="arr" d="M24,140 C40,170 70,176 92,172"/><path class="arr" d="M176,140 C160,170 130,176 108,172"/>`},
+    {t:"Apri le vele", d:"Schiaccia di nuovo il triangolo in un rombo più piccolo. Prendi le due punte in alto e tirale con decisione verso l'esterno.",
+     tip:"Tira lentamente all'inizio: se la carta resiste, aiutati aprendo la base.",
+     svg:`<polygon class="front" points="100,40 150,105 100,170 50,105"/><line class="crease" x1="100" y1="40" x2="100" y2="170"/><line class="crease" x1="50" y1="105" x2="150" y2="105"/><path class="arr" d="M94,46 C70,40 46,50 30,66"/><path class="arr" d="M106,46 C130,40 154,50 170,66"/>`},
+    {t:"Pronta a salpare", d:"Sistema lo scafo appiattendo bene il fondo. Galleggia per qualche minuto: provala in una bacinella.",
+     svg:`<polygon class="front" points="15,98 185,98 140,148 60,148"/><polygon class="front2" points="68,98 100,40 132,98"/><path class="crease" d="M20,166 q15,-8 30,0 t30,0 t30,0 t30,0 t30,0" style="opacity:.6;stroke:#4a7fb0;stroke-width:2"/>`}
+  ]
+},
+{
+  id:"indovino", cat:"giocattoli", name:"Inferno e paradiso", level:1, time:"5 min", paper:"Quadrato 20 cm",
+  kami:"#e07ba0", kami2:"#c15a82",
+  steps:[
+    {t:"Segna le diagonali", d:"Piega il quadrato lungo le due diagonali e riapri.",
+     svg:`<rect class="front" x="30" y="30" width="140" height="140"/><line class="valley" x1="30" y1="30" x2="170" y2="170"/><line class="valley" x1="170" y1="30" x2="30" y2="170"/><path class="arr2" d="M40,160 C40,90 90,40 160,40"/>`},
+    {t:"Angoli al centro", d:"Gira il foglio sul lato bianco e porta i quattro angoli esattamente al centro.",
+     svg:`<rect class="back" x="30" y="30" width="140" height="140"/><line class="crease" x1="30" y1="30" x2="170" y2="170"/><line class="crease" x1="170" y1="30" x2="30" y2="170"/><polygon class="valley" points="100,30 170,100 100,170 30,100"/><path class="arr" d="M36,36 C50,62 66,80 92,92"/><path class="arr" d="M164,36 C150,62 134,80 108,92"/><path class="arr" d="M36,164 C50,138 66,120 92,108"/><path class="arr" d="M164,164 C150,138 134,120 108,108"/>`},
+    {t:"Ripeti dall'altro lato", d:"Gira il quadrato più piccolo e porta di nuovo i quattro angoli al centro.",
+     svg:`<polygon class="front" points="100,30 170,100 100,170 30,100"/><line class="crease" x1="100" y1="30" x2="100" y2="170"/><line class="crease" x1="30" y1="100" x2="170" y2="100"/><polygon class="valley" points="65,65 135,65 135,135 65,135"/><path class="arr" d="M100,36 C112,56 112,76 102,92"/><path class="arr" d="M164,100 C144,112 124,112 108,102"/><path class="arr" d="M100,164 C88,144 88,124 98,108"/><path class="arr" d="M36,100 C56,88 76,88 92,98"/>`},
+    {t:"Scrivi numeri e sentenze", d:"Scrivi un numero su ogni triangolo. Solleva i lembi e scrivi sotto ognuno una sentenza. Poi piega a metà e infila pollici e indici nelle quattro tasche sotto.",
+     tip:"Sul lato esterno puoi colorare quattro quadrati di colori diversi: si sceglie prima il colore.",
+     svg:`<g transform="translate(-100,-100) scale(2)"><rect class="front2" x="65" y="65" width="70" height="70"/><line class="crease" x1="65" y1="65" x2="135" y2="135" style="opacity:.7"/><line class="crease" x1="135" y1="65" x2="65" y2="135" style="opacity:.7"/><line class="crease" x1="100" y1="65" x2="100" y2="135" style="opacity:.7"/><line class="crease" x1="65" y1="100" x2="135" y2="100" style="opacity:.7"/><g style="font:600 7px var(--mono);fill:#fff;text-anchor:middle"><text x="88" y="76">1</text><text x="112" y="76">2</text><text x="128" y="91">3</text><text x="128" y="115">4</text><text x="112" y="130">5</text><text x="88" y="130">6</text><text x="72" y="115">7</text><text x="72" y="91">8</text></g></g>`},
+    {t:"Gioca", d:"Chiedi a un amico di scegliere un numero. Apri e chiudi l'indovino alternando le direzioni tante volte quanto il numero, poi leggi la sentenza sotto il lembo scelto.",
+     svg:`<g><polygon class="front" points="100,100 55,85 40,40"/><polygon class="front2" points="100,100 40,40 85,55"/></g><g transform="rotate(90 100 100)"><polygon class="front" points="100,100 55,85 40,40"/><polygon class="front2" points="100,100 40,40 85,55"/></g><g transform="rotate(180 100 100)"><polygon class="front" points="100,100 55,85 40,40"/><polygon class="front2" points="100,100 40,40 85,55"/></g><g transform="rotate(270 100 100)"><polygon class="front" points="100,100 55,85 40,40"/><polygon class="front2" points="100,100 40,40 85,55"/></g>`}
+  ]
+},
+{
+  id:"cuore", cat:"decorazioni", name:"Cuore", level:1, time:"5 min", paper:"Quadrato 15 cm",
+  kami:"#d94a62", kami2:"#b33149",
+  steps:[
+    {t:"Segna la croce", d:"Con il lato bianco in alto, piega il quadrato a metà in orizzontale e in verticale, riaprendo ogni volta.",
+     svg:`<rect class="back" x="20" y="20" width="160" height="160"/><line class="valley" x1="100" y1="20" x2="100" y2="180"/><line class="valley" x1="20" y1="100" x2="180" y2="100"/><path class="arr2" d="M40,60 C70,32 130,32 160,60"/>`},
+    {t:"Bordo alto al centro", d:"Porta il bordo superiore sulla piega orizzontale centrale.",
+     svg:`<rect class="back" x="20" y="20" width="160" height="160"/><line class="crease" x1="100" y1="20" x2="100" y2="180"/><line class="crease" x1="20" y1="100" x2="180" y2="100"/><line class="valley" x1="20" y1="60" x2="180" y2="60"/><path class="arr" d="M130,24 C150,40 150,80 134,96"/>`},
+    {t:"Bordo basso in alto", d:"Porta il bordo inferiore fino al bordo superiore. Ora hai una striscia colorata.",
+     svg:`<rect class="back" x="20" y="60" width="160" height="120"/><rect class="front" x="20" y="60" width="160" height="40"/><line class="crease" x1="100" y1="100" x2="100" y2="180"/><line class="valley" x1="20" y1="120" x2="180" y2="120"/><path class="arr" d="M130,176 C156,150 156,90 134,64"/>`},
+    {t:"Alza le due metà", d:"Piega le due metà della striscia verso l'alto lungo le linee a 45° che partono dal centro del bordo inferiore. Le punte escono sopra il bordo.",
+     svg:`<rect class="front" x="20" y="60" width="160" height="60"/><line class="crease" x1="100" y1="60" x2="100" y2="120"/><line class="valley" x1="100" y1="120" x2="40" y2="60"/><line class="valley" x1="100" y1="120" x2="160" y2="60"/><path class="arr" d="M22,116 C10,80 30,50 52,42"/><path class="arr" d="M178,116 C190,80 170,50 148,42"/>`},
+    {t:"Arrotonda gli angoli", d:"Gira il modello. Piega in giù le due punte vicine al centro per formare l'incavo, e piega dietro gli angoli esterni per arrotondare il cuore.",
+     svg:`<g transform="translate(-50,-30) scale(1.5)"><polygon class="front" points="40,40 160,40 160,60 100,120 40,60"/><line class="crease" x1="100" y1="40" x2="100" y2="120"/><line class="valley" x1="86" y1="40" x2="100" y2="54"/><line class="valley" x1="114" y1="40" x2="100" y2="54"/><line class="mountain" x1="40" y1="50" x2="50" y2="40"/><line class="mountain" x1="150" y1="40" x2="160" y2="50"/></g>`},
+    {t:"Il cuore", d:"Ripassa tutte le pieghe. È perfetto come segnalibro, biglietto o decorazione per un regalo.",
+     tip:"Prima di chiudere puoi scrivere un messaggio sul lato bianco interno.",
+     svg:`<g transform="translate(-50,-30) scale(1.5)"><polygon class="front" points="100,120 40,60 40,52 52,40 84,40 100,56 116,40 148,40 160,52 160,60"/><line class="crease" x1="100" y1="56" x2="100" y2="120"/></g>`}
+  ]
+},
+{
+  id:"tulipano", cat:"decorazioni", name:"Tulipano", level:1, time:"4 min", paper:"Quadrato 15 cm",
+  kami:"#f08a3c", kami2:"#d06c20",
+  steps:[
+    {t:"Piega a triangolo", d:"Metti il quadrato a rombo e porta l'angolo in alto su quello in basso.",
+     svg:sq+`<line class="valley" x1="20" y1="100" x2="180" y2="100"/><path class="arr" d="M112,34 C160,70 160,130 112,166"/>`},
+    {t:"Alza i petali", d:"Piega gli angoli destro e sinistro verso l'alto in diagonale. Le punte devono superare il bordo superiore.",
+     svg:`<g transform="translate(0,-30)"><polygon class="front" points="20,100 180,100 100,180"/><line class="valley" x1="80" y1="160" x2="50" y2="100"/><line class="valley" x1="120" y1="160" x2="150" y2="100"/><path class="arr" d="M22,106 C20,80 40,66 64,70"/><path class="arr" d="M178,106 C180,80 160,66 136,70"/></g>`},
+    {t:"Rifinisci la forma", d:"Gira il fiore e piega dietro gli angoli laterali e la punta in basso, così il tulipano prende una forma più morbida.",
+     svg:`<g transform="translate(0,-30)"><polygon class="front" points="50,100 150,100 120,160 100,180 80,160"/><polygon class="front2" points="80,160 50,100 68,76"/><polygon class="front2" points="120,160 150,100 132,76"/><line class="mountain" x1="50" y1="112" x2="60" y2="100"/><line class="mountain" x1="140" y1="100" x2="150" y2="112"/><line class="mountain" x1="88" y1="168" x2="112" y2="168"/></g>`},
+    {t:"Aggiungi lo stelo", d:"Incolla il fiore su un cartoncino e disegna stelo e foglia, oppure piega una striscia verde e infilala dietro al fiore.",
+     tip:"Più tulipani di colori diversi fanno un bel biglietto per la festa della mamma.",
+     svg:`<line x1="100" y1="128" x2="100" y2="192" stroke="#4f8a52" stroke-width="4"/><path d="M100,178 C80,160 70,150 66,132 C86,140 96,156 100,170 Z" fill="#6aa86d" stroke="var(--line)" stroke-width="1.4"/><polygon class="front" points="54,62 146,62 132,90 112,130 88,130 68,90"/><polygon class="front2" points="84,124 54,64 68,38"/><polygon class="front2" points="116,124 146,64 132,38"/>`}
+  ]
+},
+{
+  id:"gatto", cat:"animali", name:"Muso di gatto", level:1, time:"4 min", paper:"Quadrato 15 cm",
+  kami:"#7d8796", kami2:"#5f6978",
+  steps:[
+    {t:"Piega a triangolo", d:"Metti il quadrato a rombo con il lato colorato in basso. Porta l'angolo in alto su quello in basso.",
+     svg:sq+`<line class="valley" x1="20" y1="100" x2="180" y2="100"/><path class="arr" d="M112,34 C160,70 160,130 112,166"/>`},
+    {t:"Alza le orecchie", d:"Piega gli angoli destro e sinistro verso l'alto in diagonale: le punte devono uscire sopra il bordo e diventano le orecchie.",
+     svg:`<polygon class="front" points="20,100 180,100 100,180"/><line class="crease" x1="100" y1="100" x2="100" y2="180"/><line class="valley" x1="50" y1="100" x2="80" y2="160"/><line class="valley" x1="150" y1="100" x2="120" y2="160"/><path class="arr" d="M22,94 C24,70 44,62 62,72"/><path class="arr" d="M178,94 C176,70 156,62 138,72"/>`},
+    {t:"Arrotonda il mento", d:"Piega dietro la punta in basso, quanto basta per avere un mento piatto.",
+     svg:`<polygon class="front" points="50,100 150,100 120,160 100,180 80,160"/><polygon class="front2" points="50,100 80,160 68,76"/><polygon class="front2" points="150,100 120,160 132,76"/><line class="mountain" x1="88" y1="168" x2="112" y2="168"/><path class="arr" d="M100,184 C120,190 128,176 116,170"/>`},
+    {t:"Disegna il muso", d:"Gira il modello se serve e disegna occhi, naso e baffi. Con occhi a mandorla sembra subito un gatto.",
+     tip:"Prova più colori: arancione per un gatto rosso, nero per un gatto di Halloween.",
+     svg:`<polygon class="front" points="50,100 150,100 120,160 112,168 88,168 80,160"/><polygon class="front2" points="50,100 80,160 68,76"/><polygon class="front2" points="150,100 120,160 132,76"/><ellipse class="ink" cx="86" cy="122" rx="6" ry="3.5"/><ellipse class="ink" cx="114" cy="122" rx="6" ry="3.5"/><polygon class="ink" points="94,138 106,138 100,145"/><g stroke="var(--line)" stroke-width="1.2"><line x1="90" y1="146" x2="62" y2="140"/><line x1="90" y1="150" x2="62" y2="154"/><line x1="110" y1="146" x2="138" y2="140"/><line x1="110" y1="150" x2="138" y2="154"/></g>`}
+  ]
+},
+{
+  id:"balena", cat:"animali", name:"Balena", level:1, time:"6 min", paper:"Quadrato 15 cm",
+  kami:"#4d6fa8", kami2:"#36578d",
+  steps:[
+    {t:"Segna la diagonale", d:"Metti il quadrato a rombo e piegalo a metà da sopra a sotto, poi riaprilo.",
+     svg:sq+`<line class="valley" x1="20" y1="100" x2="180" y2="100"/><path class="arr2" d="M112,34 C160,70 160,130 112,166"/>`},
+    {t:"Piega ad aquilone", d:"Dalla punta sinistra, porta i due bordi vicini sulla diagonale centrale.",
+     svg:sq+`<line class="crease" x1="20" y1="100" x2="180" y2="100"/><line class="valley" x1="20" y1="100" x2="133.1" y2="53.1"/><line class="valley" x1="20" y1="100" x2="133.1" y2="146.9"/><path class="arr" d="M96,26 C110,46 116,70 112,92"/><path class="arr" d="M96,174 C110,154 116,130 112,108"/>`},
+    {t:"Ripiega la punta corta", d:"Piega la punta destra verso sinistra lungo la linea tra i due angoli dell'aquilone.",
+     svg:`<polygon class="front" points="20,100 133.1,53.1 180,100 133.1,146.9"/><polygon class="back" points="20,100 133.1,53.1 133.1,100"/><polygon class="back" points="20,100 133.1,146.9 133.1,100"/><line class="valley" x1="133.1" y1="53.1" x2="133.1" y2="146.9"/><path class="arr" d="M176,94 C168,70 130,64 96,94"/>`},
+    {t:"Chiudi a metà", d:"Piega il modello a metà all'indietro lungo la diagonale centrale, così le pieghe restano all'interno.",
+     svg:`<polygon class="front" points="20,100 133.1,53.1 133.1,146.9"/><polygon class="front2" points="133.1,53.1 133.1,146.9 86.2,100"/><line class="mountain" x1="20" y1="100" x2="133.1" y2="100"/><path class="arr" d="M70,130 C40,150 40,170 66,176"/>`},
+    {t:"Alza la coda", d:"Piega la punta sottile verso l'alto con una piega rovescia interna: apri un poco gli strati e spingi la punta in su.",
+     svg:`<g transform="translate(5,20) scale(1.2)"><polygon class="front" points="20,100 133.1,53.1 133.1,100"/><line class="valley" x1="50" y1="100" x2="62" y2="85"/><path class="arr" d="M24,94 C18,70 30,54 46,52"/></g>`},
+    {t:"La balena", d:"Disegna l'occhio e, se vuoi, lo spruzzo d'acqua sopra la testa.",
+     svg:`<g transform="translate(5,20) scale(1.2)"><polygon class="front" points="55,100 133.1,53.1 133.1,100"/><polygon class="front2" points="52,100 66,84 28,52 22,60"/><circle class="ink" cx="116" cy="80" r="3"/><path d="M120,48 q-6,-14 -14,-18 M120,48 q0,-16 4,-22 M120,48 q8,-12 16,-14" fill="none" stroke="#4d6fa8" stroke-width="2"/></g>`}
+  ]
+},
+{
+  id:"pinguino", cat:"animali", name:"Pinguino", level:2, time:"8 min", paper:"Quadrato 15 cm",
+  kami:"#2f3542", kami2:"#1f242e",
+  steps:[
+    {t:"Segna il centro e piega la base", d:"Con il lato scuro in alto, piega il rombo a metà in verticale e riaprilo. Poi porta la punta in basso verso il centro.",
+     svg:`<polygon class="front" points="100,20 180,100 100,180 20,100"/><line class="crease" x1="100" y1="20" x2="100" y2="180"/><line class="valley" x1="60" y1="140" x2="140" y2="140"/><path class="arr" d="M108,176 C126,166 126,120 106,106"/>`},
+    {t:"Gira e piega i lati", d:"Gira il foglio. Porta i due lati verso il centro lungo le linee che partono dalla punta in alto, lasciando una V chiara al centro: sarà la pancia.",
+     svg:`<polygon class="back" points="100,20 180,100 140,140 60,140 20,100"/><line class="valley" x1="100" y1="20" x2="72" y2="140"/><line class="valley" x1="100" y1="20" x2="128" y2="140"/><path class="arr" d="M24,104 C40,120 64,120 80,108"/><path class="arr" d="M176,104 C160,120 136,120 120,108"/>`},
+    {t:"Piega a metà", d:"Gira di nuovo il modello e piegalo a metà all'indietro lungo la linea centrale.",
+     svg:`<polygon class="front" points="100,20 142,160 58,160"/><polygon class="back" points="100,58 124,160 76,160"/><line class="mountain" x1="100" y1="20" x2="100" y2="160"/><path class="arr" d="M64,150 C40,130 40,100 60,90"/>`},
+    {t:"Forma la testa", d:"Piega la punta in alto verso il basso con una piega rovescia esterna per fare la testa. Allarga leggermente la base perché stia in piedi.",
+     tip:"Segna la piega prima in avanti e indietro, poi rovescia la punta sopra il corpo.",
+     svg:`<polygon class="front" points="100,24 128,170 72,170"/><polygon class="back" points="100,66 118,170 100,170"/><line class="valley" x1="84" y1="58" x2="112" y2="50"/><path class="arr" d="M102,28 C80,24 72,40 80,56"/>`},
+    {t:"Il pinguino", d:"Il tuo pinguino è pronto. Disegna occhi e becco, oppure lasciali alla fantasia.",
+     svg:`<polygon class="front" points="100,22 142,168 58,168"/><ellipse cx="100" cy="122" rx="22" ry="40" class="back"/><circle cx="91" cy="58" r="3.5" fill="#fff"/><circle cx="109" cy="58" r="3.5" fill="#fff"/><polygon points="94,68 106,68 100,78" fill="#f0a030" stroke="var(--line)" stroke-width="1"/><ellipse cx="86" cy="170" rx="10" ry="4" fill="#f0a030"/><ellipse cx="114" cy="170" rx="10" ry="4" fill="#f0a030"/>`}
+  ]
+},
+{
+  id:"farfalla", cat:"animali", name:"Farfalla", level:2, time:"7 min", paper:"Quadrato 15 cm",
+  kami:"#b86bd0", kami2:"#954db0",
+  steps:[
+    {t:"Prepara le pieghe", d:"Con il lato bianco in alto, piega le diagonali a monte e la linea orizzontale a valle, riaprendo ogni volta.",
+     svg:`<rect class="back" x="30" y="30" width="140" height="140"/><line class="mountain" x1="30" y1="30" x2="170" y2="170"/><line class="mountain" x1="170" y1="30" x2="30" y2="170"/><line class="valley" x1="30" y1="100" x2="170" y2="100"/>`},
+    {t:"Chiudi a triangolo", d:"Spingi i punti medi dei lati destro e sinistro verso l'interno e abbassa la metà superiore: ottieni un triangolo a più strati, la base della bomba ad acqua.",
+     svg:`<rect class="back" x="30" y="30" width="140" height="140"/><line class="crease" x1="30" y1="30" x2="170" y2="170"/><line class="crease" x1="170" y1="30" x2="30" y2="170"/><line class="crease" x1="30" y1="100" x2="170" y2="100"/><path class="arr" d="M34,100 C52,100 70,100 90,100"/><path class="arr" d="M166,100 C148,100 130,100 110,100"/><path class="arr" d="M100,36 C116,56 116,76 104,90"/>`},
+    {t:"Angoli in alto", d:"Porta i due angoli inferiori dello strato davanti sulla punta del triangolo.",
+     svg:`<polygon class="front" points="30,120 170,120 100,50"/><line class="crease" x1="100" y1="50" x2="100" y2="120"/><line class="valley" x1="65" y1="85" x2="100" y2="120"/><line class="valley" x1="135" y1="85" x2="100" y2="120"/><path class="arr" d="M34,116 C40,84 70,62 94,54"/><path class="arr" d="M166,116 C160,84 130,62 106,54"/>`},
+    {t:"Abbassa la punta", d:"Gira il modello. Piega la punta in alto verso il basso, in modo che superi di poco il bordo inferiore. Ripiega la puntina sopra il bordo per bloccarla.",
+     svg:`<polygon class="front" points="30,120 170,120 100,50"/><line class="valley" x1="55" y1="95" x2="145" y2="95"/><path class="arr" d="M104,56 C126,76 124,120 104,138"/>`},
+    {t:"Piega a metà e apri", d:"Piega il modello a metà all'indietro lungo la linea centrale, ripassa bene e riapri un poco: le ali si sollevano e prendono forma.",
+     svg:`<polygon class="front" points="30,120 170,120 145,95 55,95"/><polygon class="front2" points="55,95 145,95 100,140"/><line class="mountain" x1="100" y1="80" x2="100" y2="150"/><path class="arr2" d="M40,80 C70,50 130,50 160,80"/>`},
+    {t:"La farfalla", d:"Sistema le ali in modo che le superiori siano un po' più aperte delle inferiori. Puoi aggiungere le antenne con un filo di ferro.",
+     svg:`<polygon class="front" points="100,96 28,52 40,112"/><polygon class="front" points="100,96 172,52 160,112"/><polygon class="front2" points="100,102 48,124 80,154"/><polygon class="front2" points="100,102 152,124 120,154"/><ellipse class="ink" cx="100" cy="112" rx="5" ry="30"/><path d="M98,84 q-8,-20 -18,-26 M102,84 q8,-20 18,-26" fill="none" stroke="var(--line)" stroke-width="1.6"/>`}
+  ]
+},
+{
+  id:"cappello", cat:"giocattoli", name:"Cappello di carta", level:1, time:"3 min", paper:"Foglio di giornale o A3",
+  kami:"#e8c547", kami2:"#c9a52a",
+  steps:[
+    {t:"Piega a metà", d:"Tieni il foglio in orizzontale e porta il bordo superiore su quello inferiore.",
+     svg:`<rect class="front" x="20" y="45" width="160" height="110"/><line class="valley" x1="20" y1="100" x2="180" y2="100"/><path class="arr" d="M112,50 C150,70 150,130 112,150"/>`},
+    {t:"Angoli verso il centro", d:"Con la piega chiusa in alto, piega i due angoli superiori verso il centro fino a farli incontrare.",
+     svg:`<rect class="front" x="30" y="70" width="140" height="95"/><line class="valley" x1="100" y1="70" x2="30" y2="140"/><line class="valley" x1="100" y1="70" x2="170" y2="140"/><path class="arr" d="M34,74 C46,100 70,112 88,112"/><path class="arr" d="M166,74 C154,100 130,112 112,112"/>`},
+    {t:"Alza le strisce", d:"Piega in su la striscia davanti sopra i triangoli. Gira il modello e fai lo stesso dietro.",
+     tip:"Per un cappello più resistente, piega la striscia due volte.",
+     svg:`<polygon class="front" points="100,70 30,140 170,140"/><rect class="front2" x="30" y="140" width="140" height="25"/><line class="valley" x1="30" y1="140" x2="170" y2="140"/><path class="arr" d="M100,162 C124,158 124,134 104,124"/>`},
+    {t:"Il cappello", d:"Apri il cappello dal basso e indossalo. Con un foglio di giornale viene della misura giusta per un adulto.",
+     svg:`<polygon class="front" points="100,50 22,140 178,140"/><rect class="front2" x="22" y="124" width="156" height="22"/><line class="crease" x1="100" y1="50" x2="100" y2="124"/>`}
+  ]
+},
+{
+  id:"shuriken", cat:"giocattoli", name:"Stella ninja", level:2, time:"10 min", paper:"2 quadrati 15 cm",
+  kami:"#d24b3c", kami2:"#2f5f9a",
+  steps:[
+    {t:"Fai due strisce", d:"Prendi due quadrati, se possibile di colori diversi. Piega ognuno a metà e riapri, poi porta i due bordi sulla piega centrale.",
+     svg:`<rect class="front" x="40" y="20" width="120" height="160"/><line class="crease" x1="100" y1="20" x2="100" y2="180"/><line class="valley" x1="70" y1="20" x2="70" y2="180"/><line class="valley" x1="130" y1="20" x2="130" y2="180"/><path class="arr" d="M44,60 C54,50 62,50 66,58"/><path class="arr" d="M156,60 C146,50 138,50 134,58"/>`},
+    {t:"Chiudi la striscia", d:"Piega ancora a metà nel senso della lunghezza: ottieni una striscia stretta e spessa. Fai lo stesso con il secondo foglio.",
+     svg:`<rect class="front" x="70" y="20" width="60" height="160"/><line class="valley" x1="100" y1="20" x2="100" y2="180"/><path class="arr" d="M74,80 C80,64 120,64 126,80"/>`},
+    {t:"Piega le estremità", d:"Piega le due estremità a triangolo in direzioni opposte. Nella seconda striscia piegale in modo speculare, altrimenti la stella non si chiude.",
+     tip:"Appoggia le due strisce una accanto all'altra prima di piegare: devono sembrare l'una lo specchio dell'altra.",
+     svg:`<rect class="front" x="85" y="20" width="30" height="160"/><line class="valley" x1="85" y1="50" x2="115" y2="20"/><line class="valley" x1="85" y1="180" x2="115" y2="150"/><path class="arr" d="M112,24 C140,20 146,48 120,52"/><path class="arr" d="M88,176 C60,180 54,152 80,148"/>`},
+    {t:"Incrocia e chiudi", d:"Ripiega le punte a parallelogramma, gira un pezzo e appoggialo a croce sull'altro. Piega le punte di quello sotto dentro le tasche di quello sopra, poi gira e ripeti.",
+     svg:`<polygon class="front" points="25,115 55,85 175,85 145,115"/><polygon class="front2" points="85,25 115,55 115,175 85,145"/><path class="arr" d="M30,108 C30,80 60,70 86,84"/><path class="arr" d="M170,92 C170,120 140,130 114,116"/>`},
+    {t:"La stella", d:"Spingi le ultime punte nelle tasche e ripassa bene i bordi. La stella è pronta: lanciala solo verso bersagli di carta, mai verso le persone.",
+     svg:`<rect class="front2" x="80" y="80" width="40" height="40"/><polygon class="front" points="80,80 120,80 120,28"/><polygon class="front2" points="120,80 120,120 172,80"/><polygon class="front" points="120,120 80,120 80,172"/><polygon class="front2" points="80,120 80,80 28,120"/>`}
+  ]
+},
+{
+  id:"girandola", cat:"giocattoli", name:"Girandola", level:1, time:"8 min", paper:"Quadrato 20 cm",
+  kami:"#3fb0c9", kami2:"#f2c94c",
+  steps:[
+    {t:"Diagonali e tagli", d:"Piega le due diagonali e riapri. Con le forbici taglia lungo ogni diagonale partendo dall'angolo, fermandoti a circa 2 cm dal centro.",
+     tip:"Questo è l'unico modello che usa le forbici: fatti aiutare da un adulto.",
+     svg:`<rect class="front" x="30" y="30" width="140" height="140"/><line class="crease" x1="30" y1="30" x2="170" y2="170"/><line class="crease" x1="170" y1="30" x2="30" y2="170"/><g class="cut"><line x1="30" y1="30" x2="82" y2="82"/><line x1="170" y1="30" x2="118" y2="82"/><line x1="170" y1="170" x2="118" y2="118"/><line x1="30" y1="170" x2="82" y2="118"/></g><circle class="ink" cx="100" cy="100" r="3"/><text class="lbl" x="34" y="24">taglia</text>`},
+    {t:"Punte al centro", d:"Ogni angolo ora è diviso in due punte. Porta al centro una punta sì e una no, senza schiacciarle: devono restare curve.",
+     svg:`<rect class="front" x="30" y="30" width="140" height="140"/><g class="cut"><line x1="30" y1="30" x2="82" y2="82"/><line x1="170" y1="30" x2="118" y2="82"/><line x1="170" y1="170" x2="118" y2="118"/><line x1="30" y1="170" x2="82" y2="118"/></g><path class="arr" d="M44,32 C66,44 84,70 96,94"/><path class="arr" d="M168,44 C156,66 130,84 106,96"/><path class="arr" d="M156,168 C134,156 116,130 104,106"/><path class="arr" d="M32,156 C44,134 70,116 94,104"/>`},
+    {t:"Fissa il centro", d:"Infila uno spillo o un fermacampione attraverso le quattro punte e il centro del foglio, poi fissalo a una cannuccia o a un bastoncino.",
+     svg:`<g><polygon class="front" points="100,100 100,30 166,36"/><polygon class="front2" points="100,100 166,36 140,70"/></g><g transform="rotate(90 100 100)"><polygon class="front" points="100,100 100,30 166,36"/><polygon class="front2" points="100,100 166,36 140,70"/></g><g transform="rotate(180 100 100)"><polygon class="front" points="100,100 100,30 166,36"/><polygon class="front2" points="100,100 166,36 140,70"/></g><g transform="rotate(270 100 100)"><polygon class="front" points="100,100 100,30 166,36"/><polygon class="front2" points="100,100 166,36 140,70"/></g><circle cx="100" cy="100" r="6" fill="#e6e6e6" stroke="var(--line)" stroke-width="1.4"/>`},
+    {t:"Soffia", d:"Soffia sulle pale o corri tenendo il bastoncino davanti a te. Se non gira, allenta un poco lo spillo.",
+     svg:`<rect x="97" y="96" width="6" height="100" fill="#a0764a" stroke="var(--line)" stroke-width="1.2"/><g transform="translate(0,-14)"><g><polygon class="front" points="100,100 100,40 156,46"/><polygon class="front2" points="100,100 156,46 134,74"/></g><g transform="rotate(90 100 100)"><polygon class="front" points="100,100 100,40 156,46"/><polygon class="front2" points="100,100 156,46 134,74"/></g><g transform="rotate(180 100 100)"><polygon class="front" points="100,100 100,40 156,46"/><polygon class="front2" points="100,100 156,46 134,74"/></g><g transform="rotate(270 100 100)"><polygon class="front" points="100,100 100,40 156,46"/><polygon class="front2" points="100,100 156,46 134,74"/></g><circle cx="100" cy="100" r="5" fill="#e6e6e6" stroke="var(--line)" stroke-width="1.4"/></g>`}
+  ]
+},
+{
+  id:"busta", cat:"decorazioni", name:"Busta", level:1, time:"4 min", paper:"Quadrato 20 cm",
+  kami:"#c99a6b", kami2:"#a97a4c",
+  steps:[
+    {t:"Angoli laterali al centro", d:"Metti il quadrato a rombo con il lato colorato in basso. Porta l'angolo sinistro e quello destro al centro.",
+     svg:sq+`<line class="crease" x1="20" y1="100" x2="180" y2="100"/><line class="valley" x1="60" y1="60" x2="60" y2="140"/><line class="valley" x1="140" y1="60" x2="140" y2="140"/><path class="arr" d="M24,96 C40,80 70,80 92,96"/><path class="arr" d="M176,96 C160,80 130,80 108,96"/>`},
+    {t:"Chiudi il fondo", d:"Porta la punta in basso verso l'alto, un po' oltre il centro, coprendo i lembi laterali.",
+     svg:`<polygon class="back" points="60,60 100,20 140,60 140,140 100,180 60,140"/><polygon class="front" points="60,60 100,100 60,140"/><polygon class="front" points="140,60 100,100 140,140"/><line class="valley" x1="60" y1="140" x2="140" y2="140"/><path class="arr" d="M108,176 C130,166 130,124 108,110"/>`},
+    {t:"Il lembo di chiusura", d:"Piega in giù la punta in alto. Puoi infilarla sotto il lembo inferiore o fermarla con un adesivo.",
+     svg:`<polygon class="back" points="60,60 100,20 140,60 140,140 60,140"/><polygon class="front" points="60,60 100,100 60,140"/><polygon class="front" points="140,60 100,100 140,140"/><polygon class="front2" points="60,140 140,140 100,96"/><line class="valley" x1="60" y1="60" x2="140" y2="60"/><path class="arr" d="M108,24 C128,36 128,70 108,86"/>`},
+    {t:"La busta", d:"Ripassa bene i bordi. Dentro ci sta un biglietto piegato in quattro.",
+     tip:"Con un foglio A4 tagliato a quadrato ottieni una busta da circa 10 cm.",
+     svg:`<g transform="translate(-100,-100) scale(2)"><rect class="back" x="60" y="60" width="80" height="80"/><polygon class="front" points="60,60 100,100 60,140"/><polygon class="front" points="140,60 100,100 140,140"/><polygon class="front2" points="60,140 140,140 100,98"/><polygon class="front2" points="60,60 140,60 100,104"/><circle cx="100" cy="102" r="5" fill="#c4572a"/></g>`}
+  ]
+},
+{
+  id:"masu", cat:"decorazioni", name:"Scatolina masu", level:2, time:"10 min", paper:"Quadrato 20 cm",
+  kami:"#7a6cc2", kami2:"#5d4fa6",
+  steps:[
+    {t:"Angoli al centro", d:"Con il lato colorato in basso, segna le due diagonali. Poi porta i quattro angoli esattamente al centro.",
+     svg:`<rect class="back" x="30" y="30" width="140" height="140"/><line class="crease" x1="30" y1="30" x2="170" y2="170"/><line class="crease" x1="170" y1="30" x2="30" y2="170"/><polygon class="valley" points="100,30 170,100 100,170 30,100"/><path class="arr" d="M36,36 C50,62 66,80 92,92"/><path class="arr" d="M164,36 C150,62 134,80 108,92"/><path class="arr" d="M36,164 C50,138 66,120 92,108"/><path class="arr" d="M164,164 C150,138 134,120 108,108"/>`},
+    {t:"Segna le pareti", d:"Ruota il quadrato con un lato in basso. Porta i bordi alto e basso al centro, riapri, poi fai lo stesso con i bordi destro e sinistro.",
+     svg:`<rect class="front" x="40" y="40" width="120" height="120"/><line class="crease" x1="40" y1="40" x2="160" y2="160"/><line class="crease" x1="160" y1="40" x2="40" y2="160"/><line class="valley" x1="40" y1="70" x2="160" y2="70"/><line class="valley" x1="40" y1="130" x2="160" y2="130"/><line class="valley" x1="70" y1="40" x2="70" y2="160"/><line class="valley" x1="130" y1="40" x2="130" y2="160"/><path class="arr2" d="M100,46 C112,54 112,88 100,96"/>`},
+    {t:"Apri due lembi", d:"Riapri i due triangoli in alto e in basso. Solleva i lati destro e sinistro: diventano due pareti della scatola.",
+     svg:`<g transform="translate(30,30) scale(.7)"><rect class="front" x="40" y="40" width="120" height="120"/><polygon class="back" points="40,40 160,40 100,-20"/><polygon class="back" points="40,160 160,160 100,220"/><line class="crease" x1="40" y1="70" x2="160" y2="70"/><line class="crease" x1="40" y1="130" x2="160" y2="130"/><line class="valley" x1="70" y1="40" x2="70" y2="160"/><line class="valley" x1="130" y1="40" x2="130" y2="160"/><path class="arr" d="M46,100 C30,70 40,50 60,48"/><path class="arr" d="M154,100 C170,70 160,50 140,48"/></g>`},
+    {t:"Chiudi le pareti", d:"Spingi verso l'interno gli angoli del lembo in alto: si alza la terza parete. Ripiega la punta dentro la scatola fino al fondo. Ripeti dall'altro lato.",
+     tip:"Con due quadrati, uno di 5 mm più grande, ottieni scatola e coperchio.",
+     svg:`<polygon class="front" points="40,100 100,130 100,175 40,145"/><polygon class="front2" points="100,130 160,100 160,145 100,175"/><polygon class="back" points="40,100 100,70 160,100 100,130"/><polyline points="54,100 100,77 146,100" fill="none" stroke="var(--line)" stroke-width="1"/><path class="arr" d="M100,40 C116,48 116,70 104,82"/>`},
+    {t:"La scatolina", d:"Ripassa gli spigoli tra le dita per renderli netti. La masu è una scatola tradizionale giapponese usata un tempo per misurare il riso.",
+     svg:`<polygon class="front" points="34,96 100,128 100,172 34,140"/><polygon class="front2" points="100,128 166,96 166,140 100,172"/><polygon class="back" points="34,96 100,64 166,96 100,128"/><polygon points="48,96 100,71 152,96 100,121" fill="var(--kami2)" opacity=".35"/>`}
+  ]
+},
+{
+  id:"segnalibro", cat:"decorazioni", name:"Segnalibro ad angolo", level:1, time:"4 min", paper:"Quadrato 15 cm",
+  kami:"#4fb39a", kami2:"#35927a",
+  steps:[
+    {t:"Piega a triangolo", d:"Metti il quadrato a rombo e porta l'angolo in basso su quello in alto.",
+     svg:sq+`<line class="valley" x1="20" y1="100" x2="180" y2="100"/><path class="arr" d="M88,168 C40,140 40,62 88,32"/>`},
+    {t:"Abbassa uno strato", d:"Piega in giù solo lo strato davanti della punta in alto, fino al bordo inferiore. Si forma una tasca.",
+     svg:`<polygon class="front" points="20,100 180,100 100,20"/><line class="valley" x1="60" y1="60" x2="140" y2="60"/><path class="arr" d="M108,26 C126,40 124,80 106,94"/>`},
+    {t:"Angoli in alto", d:"Porta gli angoli destro e sinistro sulla punta in alto. Ottieni un quadrato.",
+     svg:`<polygon class="front" points="20,100 180,100 100,20"/><polygon class="back" points="60,60 140,60 100,100"/><line class="valley" x1="60" y1="60" x2="100" y2="100"/><line class="valley" x1="140" y1="60" x2="100" y2="100"/><path class="arr" d="M24,96 C30,60 60,36 94,24"/><path class="arr" d="M176,96 C170,60 140,36 106,24"/>`},
+    {t:"Infila nella tasca", d:"Riapri gli angoli appena piegati e infilali dentro la tasca, sotto lo strato abbassato al passo 2.",
+     svg:`<g transform="translate(-100,-20) scale(2)"><polygon class="front" points="100,20 140,60 100,100 60,60"/><line class="crease" x1="100" y1="20" x2="100" y2="100"/><line class="valley" x1="80" y1="80" x2="120" y2="80"/><path class="arr" d="M72,58 C76,72 84,80 94,84"/><path class="arr" d="M128,58 C124,72 116,80 106,84"/></g>`},
+    {t:"Il segnalibro", d:"Infila la tasca sull'angolo della pagina. Puoi trasformarlo in un mostriciattolo disegnando occhi e denti.",
+     tip:"Non si sfila e non rovina la pagina come un'orecchia piegata.",
+     svg:`<rect class="back" x="20" y="20" width="160" height="160"/><g stroke="var(--line)" stroke-width="1" opacity=".25"><line x1="36" y1="50" x2="130" y2="50"/><line x1="36" y1="66" x2="150" y2="66"/><line x1="36" y1="82" x2="164" y2="82"/><line x1="36" y1="98" x2="164" y2="98"/><line x1="36" y1="114" x2="164" y2="114"/><line x1="36" y1="130" x2="164" y2="130"/><line x1="36" y1="146" x2="140" y2="146"/></g><polygon class="front" points="100,20 180,20 180,100"/><line class="crease" x1="132" y1="20" x2="180" y2="68"/><circle cx="150" cy="38" r="5" fill="#fff" stroke="var(--line)"/><circle class="ink" cx="151" cy="39" r="2"/>`}
+  ]
+
+}];
+
+const CATS = [
+  {id:"tutti", name:"Tutti"},
+  {id:"animali", name:"Animali"},
+  {id:"giocattoli", name:"Giocattoli"},
+  {id:"decorazioni", name:"Casa e decorazioni"}
+];
+const CAT_NAME = Object.fromEntries(CATS.map(c=>[c.id,c.name]));
+let filter = "tutti";
+
+const $ = id => document.getElementById(id);
+let model = MODELS[0], step = 0;
+
+function svgWrap(inner, cls=""){ return `<svg viewBox="0 0 200 200" class="${cls}" role="img">${inner}</svg>`; }
+function setKami(el,m){ el.style.setProperty('--kami',m.kami); el.style.setProperty('--kami2',m.kami2); }
+
+function renderFilters(){
+  $('filters').innerHTML = CATS.map(c=>{
+    const n = c.id==='tutti' ? MODELS.length : MODELS.filter(m=>m.cat===c.id).length;
+    return `<button class="chip" type="button" data-cat="${c.id}" aria-pressed="${c.id===filter}">${c.name}<span>${n}</span></button>`;
+  }).join('');
+  $('filters').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{ filter=b.dataset.cat; try{localStorage.setItem('origami-cat',filter);}catch(e){} renderFilters(); renderCards(); });
+}
+
+function renderCards(){
+  const list = MODELS.filter(m=>filter==='tutti'||m.cat===filter).sort((a,b)=>a.level-b.level);
+  $('models').innerHTML = list.map(m=>`
+    <button class="card" type="button" data-id="${m.id}" aria-pressed="${m===model}">
+      <div class="thumb" style="--kami:${m.kami};--kami2:${m.kami2}">${svgWrap(m.steps[m.steps.length-1].svg)}</div>
+      <div><div class="cat">${CAT_NAME[m.cat]}</div><h3>${m.name}</h3>
+        <div class="meta"><span class="dots" aria-label="Difficoltà ${m.level} su 3">${'●'.repeat(m.level)}${'○'.repeat(3-m.level)}</span><span>${m.steps.length} passi</span><span>${m.time}</span><span>${m.paper}</span></div>
+      </div></button>`).join('');
+  $('models').querySelectorAll('.card').forEach(b=>b.onclick=()=>{ choose(b.dataset.id); $('viewer').scrollIntoView({behavior:'smooth',block:'start'}); });
+}
+
+function render(){
+  const s = model.steps[step], n = model.steps.length;
+  setKami($('sheet'), model);
+  $('diagram').innerHTML = svgWrap(s.svg,'anim');
+  $('diagram').firstChild.setAttribute('aria-label', s.t);
+  $('stepno').textContent = `${String(step+1).padStart(2,'0')} / ${String(n).padStart(2,'0')}`;
+  $('modelname').textContent = `${model.name} · passo ${step+1} di ${n}`;
+  $('steptitle').textContent = s.t;
+  $('steptext').textContent = s.d;
+  $('steptip').hidden = !s.tip; $('steptip').textContent = s.tip||'';
+  $('progress').innerHTML = model.steps.map((_,i)=>`<button type="button" class="${i===step?'cur':i<step?'done':''}" data-i="${i}" aria-label="Vai al passo ${i+1}">${i+1}</button>`).join('');
+  $('progress').querySelectorAll('button').forEach(b=>b.onclick=()=>{step=+b.dataset.i;render();});
+  $('prev').disabled = step===0;
+  $('next').textContent = step===n-1 ? 'Ricomincia ↺' : 'Avanti →';
+  try{ localStorage.setItem('origami', JSON.stringify({id:model.id,step})); }catch(e){}
+}
+
+function choose(id, st=0){
+  model = MODELS.find(m=>m.id===id)||MODELS[0]; step = st;
+  document.querySelectorAll('.card').forEach(c=>c.setAttribute('aria-pressed', c.dataset.id===model.id));
+  render();
+}
+function go(d){ const n=model.steps.length; step = (d>0 && step===n-1) ? 0 : Math.max(0,Math.min(n-1,step+d)); render(); }
+$('prev').onclick=()=>go(-1); $('next').onclick=()=>go(1);
+document.addEventListener('keydown',e=>{ if(e.key==='ArrowRight')go(1); if(e.key==='ArrowLeft')go(-1); });
+let x0=null; $('sheet').addEventListener('touchstart',e=>x0=e.touches[0].clientX,{passive:true});
+$('sheet').addEventListener('touchend',e=>{ if(x0===null)return; const dx=e.changedTouches[0].clientX-x0; if(Math.abs(dx)>40)go(dx<0?1:-1); x0=null; });
+
+let saved=null; try{ saved=JSON.parse(localStorage.getItem('origami')); }catch(e){}
+const hashId = location.hash.slice(1);
+try{ const c=localStorage.getItem('origami-cat'); if(CATS.some(x=>x.id===c)) filter=c; }catch(e){}
+renderFilters(); renderCards();
+if (MODELS.some(m=>m.id===hashId)) choose(hashId);
+else if (saved && MODELS.some(m=>m.id===saved.id)) choose(saved.id, Math.min(saved.step|0, MODELS.find(m=>m.id===saved.id).steps.length-1));
+else choose('aeroplano');
+</script>
+
+</body></html>
